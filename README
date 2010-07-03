@@ -1,0 +1,43 @@
+Test::Mock is a module that works alongside the standard Test module to
+help you write tests when you want to verify what methods are called on
+an object, while still having calls to undefined methods die.
+
+You get started just as normal with the test file, but also add a use
+statement for Test::Mock.
+
+  use Test;
+  use Test::Mock;
+  
+  plan 2;
+
+Imagine we have some class Foo:
+
+  class Foo {
+      method lol() { 'rofl' }
+      method wtf() { 'oh ffs' }
+  }
+
+We then arrange to have a mocked instance of this class. This means that
+instead of calls to lol and wtf actually resulting in the methods being
+invoked, it simply logs the invocations.
+
+  my $x = mocked(Foo);
+
+We can then take the actions that should result in some method calls.
+Here we just make them directly, but you'd probably no doubt pass the
+mock to other objects that will make calls on it.
+
+  $x.lol();
+  $x.lol();
+
+When you're done, you assert that the things you expected to happen
+actually happened.
+
+  check-mock($x,
+      *.called('lol', times => 2),
+      *.never-called('wtf'),
+  );
+
+And that's it. :-) A few more features coming soon too.
+
+Enjoy!
