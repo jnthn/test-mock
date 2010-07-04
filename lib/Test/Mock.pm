@@ -20,16 +20,19 @@ class Test::Mock::Log {
             $with-args-note = " with arguments matching $with.perl()";
         }
         if defined($times) {
-            ok +@calls == $times, "called $name $times time{ $times != 1 ?? 's' !! '' }$with-args-note";
+            my $times-msg =
+                $times == 0 ?? "never called $name" !!
+                $times == 1 ?? "called $name 1 time" !!
+                               "called $name $times times";
+            is +@calls, $times, "$times-msg$with-args-note";
         }
         else {
             ok ?@calls, "called $name$with-args-note";
         }
     }
 
-    method never-called($name) {
-        my @calls = @!log-entries.grep({ .<name> eq $name });
-        ok !@calls, "never called $name";
+    method never-called($name, :$with) {
+        self.called($name, times => 0, :$with);
     }
 };
 
