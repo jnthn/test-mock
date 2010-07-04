@@ -48,8 +48,8 @@ invoked, it simply logs the invocations.
   my $x = mocked(Foo);
 
 We can then take the actions that should result in some method calls.
-Here we just make them directly, but you'd probably no doubt pass the
-mock to other objects that will make calls on it.
+Here we just make them directly, but you'd probably pass the mock to
+other bits of code that will make calls on it.
 
   $x.lol();
   $x.lol();
@@ -62,6 +62,63 @@ actually happened.
       *.never-called('wtf'),
   );
 
-And that's it. :-) A few more features coming soon too.
+And it's as easy as that. Of course, you may also be interested to check
+that the arguments passed to the mocked method were as expected. For our
+second example, here's a class representing one of my favorite places.
 
-Enjoy!
+  class Pub {
+      method order_beer($pints) { }
+      method throw($what) { }
+  }
+
+We'll also declare a couple of other classes:
+
+  class Glass { }
+  class Party { }
+
+Our test file would have started with the same boilerplate - use Test and
+Test::Mock, and set a plan. We then produce a mock instance of Pub:
+
+  my $p = mocked(Pub);
+
+And do our stuff:
+
+  $p.throw(Party.new);
+  $p.order_beer(2);
+  $p.order_beer(1);
+
+After our excruciatingly low on beer party, we can now do some checks. Of
+course, we ordered beer twice, so we can check this as before:
+
+  check-mock($p,
+      *.called('order_beer', times => 2),
+
+But what if we wanted to check the arguments passed to the method? In that
+case, you can simply pass along the parameter "with". We may pass a Capture
+here, which contains the exact arguments we expected to be passed; this will
+be tested against the actual passed Capture for equivalance.
+
+      *.called('order_beer', times => 1, with => \(1)),
+      *.called('order_beer', times => 1, with => \(2)),
+      *.never-called('order_beer', with => \(10)),
+
+That's going to cover some cases, but what if we wanted to check if things of
+the correct type were passed? In that case, write a Signature literal, and the
+args Capture will be smart-matched against it, which conveniently happens to
+check if the Capture could have bound to this Signature.
+
+    *.called('throw', with => :(Party)),
+    *.never-called('throw', with => :(Glass)),
+
+Of course, now the gloves are off: if you have a Signature you can do all kinds
+of matching, with constraints and sub-signatures. Here's an easy but not so
+creative example (I need at least 3 pints to be creative...)
+
+      *.called('order_beer', times => 2, with => :($ where { $^n < 10 })),
+      *.never-called('order_beer', with => :($ where { $^n >= 10 })),
+
+And if all that isn't enough, since we just smart-match against anything else
+you may pass as the with argument, you may also pass a block that takes a
+Capture as a parameter and implement whatever fancier checks you may wish to.
+
+Probably another feature or two coming up soon. :-) In the meantime, na zdravie!
