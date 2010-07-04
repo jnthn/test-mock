@@ -7,13 +7,23 @@ class Test::Mock::Log {
         @!log-entries.push({ :$name, :$capture });
     }
 
-    method called($name, :$times) {
+    method called($name, :$times, :$with) {
         my @calls = @!log-entries.grep({ .<name> eq $name });
+        my $with-args-note = "";
+        if defined($with) {
+            if $with ~~ Capture {
+                @calls .= grep({ .<capture> eqv $with });
+            }
+            else {
+                @calls .= grep({ .<capture> ~~ $with });
+            }
+            $with-args-note = " with arguments matching $with.perl()";
+        }
         if defined($times) {
-            ok +@calls == $times, "called $name $times time{ $times != 1 && 's' }";
+            ok +@calls == $times, "called $name $times time{ $times != 1 ?? 's' !! '' }$with-args-note";
         }
         else {
-            ok ?@calls, "called $name";
+            ok ?@calls, "called $name$with-args-note";
         }
     }
 
