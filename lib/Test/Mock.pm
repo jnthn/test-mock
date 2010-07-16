@@ -37,7 +37,7 @@ class Test::Mock::Log {
 };
 
 module Test::Mock {
-    sub mocked($type) is export {
+    sub mocked($type, :%returning = {}) is export {
         # Generate a subclass that logs each method call.
         my %already-seen = :new;
         my $mocker = ClassHOW.new;
@@ -48,6 +48,9 @@ module Test::Mock {
                 unless %already-seen{$m.name} {
                     $mocker.^add_method($m.name, method (|$c) {
                         $!log.log-method-call($m.name, $c);
+                        %returning{$m.name} ~~ List ??
+                            @(%returning{$m.name}) !!
+                            %returning{$m.name}
                     });
                     %already-seen{$m.name} = True;
                 }
