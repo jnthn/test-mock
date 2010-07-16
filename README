@@ -121,4 +121,83 @@ And if all that isn't enough, since we just smart-match against anything else
 you may pass as the with argument, you may also pass a block that takes a
 Capture as a parameter and implement whatever fancier checks you may wish to.
 
-Probably another feature or two coming up soon. :-) In the meantime, na zdravie!
+In some cases, just logging method calls on your mock may not be enough; you
+may wish them to return some fake data from the method call. For example, we
+may have a yak shaving class that we dependency-inject with a yak provider
+and a yak shaver.
+
+  class Yak {
+      has $.shaved;
+  }
+  
+  class Shaver {
+      method shave($yak) {
+          ...
+      }
+  }
+  
+  class YakStore {
+      method get-all-yaks() {
+          ...
+      }
+  }
+  
+  class YakShaving {
+      has $!yak-store;
+      has $!yak-shaver;
+      
+      method proccess() {
+          for $!yak-store.get-all-yaks() -> $yak {
+              unless $yak.shaved {
+                  $!yak-shaver.shave($yak);
+              }
+          }
+      }
+  }
+
+We want to check that our the shave method from the Shaver class is only
+invoked for yaks that need shaving. We set up our mock of the Shaver class
+just as normal:
+
+  my $shaver = mocked(Shaver);
+
+However, for the Yak store we want to provide some fake yaks in various
+states of shavenness.
+
+  my $store = mocked(YakStore, returning => {
+      get-all-yaks => (Yak.new(:!shaved), Yak.new(:shaved), Yak.new(:!shaved))
+  });
+
+Now we can inject our mocks to the YakShaving class and and get it to do
+it's thing.
+
+  my $yaktivity = YakShaving.new(
+      yak-store => $store,
+      yak-shaver => $shaver
+  );
+  $yaktivity.proccess();
+
+And finally, it's time to write our tests. We expect just one call on the
+store:
+
+  check-mock($store,
+      *.called('get-all-yaks', times => 1)
+  );
+
+On the shaver, we expect two calls in total to the shave method with yaks
+that are unshaven, and no calls at all with shaven yaks.
+
+  check-mock($shaver,
+      *.called('shave', times => 2, with => :($ where { !$^y.shaved })),
+      *.never-called('shave', with => :($ where { $^y.shaved }))
+  );
+
+This is the first example where we're really made good use of mock testing;
+if absolutely every object involved in the test is mocked, then you'd not be
+testing any of the actual real code. Of course, being able to do this easily
+somewhat depends on good de-coupled code design, where objects are given
+instances of other objects to work on rather than directly instantiating
+objects of other classes.
+
+Feature requests, bug reports and patches on this module are welcome; use
+the GitHub issues tracker.
