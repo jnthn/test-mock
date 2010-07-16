@@ -8,7 +8,11 @@ class Test::Mock::Log {
     }
 
     method called($name, :$times, :$with) {
+        # Extract calls of the matching name.
         my @calls = @!log-entries.grep({ .<name> eq $name });
+
+        # If we've an argument filter, apply it; we smart-match
+        # everything but captures, which we eqv.
         my $with-args-note = "";
         if defined($with) {
             if $with ~~ Capture {
@@ -19,6 +23,8 @@ class Test::Mock::Log {
             }
             $with-args-note = " with arguments matching $with.perl()";
         }
+
+        # Enforce times parameter, if given.
         if defined($times) {
             my $times-msg =
                 $times == 0 ?? "never called $name" !!
