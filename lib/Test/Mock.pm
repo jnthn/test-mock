@@ -46,9 +46,9 @@ module Test::Mock {
             last if $p === Mu;
             for $p.^methods(:local) -> $m {
                 unless %already-seen{$m.name} {
-                    $mocker.^add_method($m.name, (method (|$c) {
+                    $mocker.^add_method($m.name, method (|$c) {
                         $!log.log-method-call($m.name, $c);
-                    }).clone);
+                    });
                     %already-seen{$m.name} = True;
                 }
             }
