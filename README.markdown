@@ -1,26 +1,26 @@
-SYNOPSIS
+# Synopsis
 
-  use Test;
-  use Test::Mock;
-  
-  plan 2;
-  
-  class Foo {
-      method lol() { 'rofl' }
-      method wtf() { 'oh ffs' }
-  }
-  
-  my $x = mocked(Foo);
-  
-  $x.lol();
-  $x.lol();
-  
-  check-mock($x,
-      *.called('lol', times => 2),
-      *.never-called('wtf'),
-  );
+    use Test;
+    use Test::Mock;
+    
+    plan 2;
+    
+    class Foo {
+        method lol() { 'rofl' }
+        method wtf() { 'oh ffs' }
+    }
+    
+    my $x = mocked(Foo);
+    
+    $x.lol();
+    $x.lol();
+    
+    check-mock($x,
+        *.called('lol', times => 2),
+        *.never-called('wtf'),
+    );
 
-DETAILS
+# Details
 
 Test::Mock is a module that works alongside the standard Test module to
 help you write tests when you want to verify what methods are called on
@@ -29,69 +29,69 @@ an object, while still having calls to undefined methods die.
 You get started just as normal with the test file, but also add a use
 statement for Test::Mock.
 
-  use Test;
-  use Test::Mock;
-  
-  plan 2;
+    use Test;
+    use Test::Mock;
+    
+    plan 2;
 
 Imagine we have some class Foo:
 
-  class Foo {
-      method lol() { 'rofl' }
-      method wtf() { 'oh ffs' }
-  }
+    class Foo {
+        method lol() { 'rofl' }
+        method wtf() { 'oh ffs' }
+    }
 
 We then arrange to have a mocked instance of this class. This means that
 instead of calls to lol and wtf actually resulting in the methods being
 invoked, it simply logs the invocations.
 
-  my $x = mocked(Foo);
+    my $x = mocked(Foo);
 
 We can then take the actions that should result in some method calls.
 Here we just make them directly, but you'd probably pass the mock to
 other bits of code that will make calls on it.
 
-  $x.lol();
-  $x.lol();
+    $x.lol();
+    $x.lol();
 
 When you're done, you assert that the things you expected to happen
 actually happened.
 
-  check-mock($x,
-      *.called('lol', times => 2),
-      *.never-called('wtf'),
-  );
+    check-mock($x,
+        *.called('lol', times => 2),
+        *.never-called('wtf'),
+    );
 
 And it's as easy as that. Of course, you may also be interested to check
 that the arguments passed to the mocked method were as expected. For our
 second example, here's a class representing one of my favorite places.
 
-  class Pub {
-      method order_beer($pints) { }
-      method throw($what) { }
-  }
+    class Pub {
+        method order_beer($pints) { }
+        method throw($what) { }
+    }
 
 We'll also declare a couple of other classes:
 
-  class Glass { }
-  class Party { }
+    class Glass { }
+    class Party { }
 
 Our test file would have started with the same boilerplate - use Test and
 Test::Mock, and set a plan. We then produce a mock instance of Pub:
 
-  my $p = mocked(Pub);
+    my $p = mocked(Pub);
 
 And do our stuff:
 
-  $p.throw(Party.new);
-  $p.order_beer(2);
-  $p.order_beer(1);
+    $p.throw(Party.new);
+    $p.order_beer(2);
+    $p.order_beer(1);
 
 After our excruciatingly low on beer party, we can now do some checks. Of
 course, we ordered beer twice, so we can check this as before:
 
-  check-mock($p,
-      *.called('order_beer', times => 2),
+    check-mock($p,
+        *.called('order_beer', times => 2),
 
 But what if we wanted to check the arguments passed to the method? In that
 case, you can simply pass along the parameter "with". We may pass a Capture
@@ -126,71 +126,71 @@ may wish them to return some fake data from the method call. For example, we
 may have a yak shaving class that we dependency-inject with a yak provider
 and a yak shaver.
 
-  class Yak {
-      has $.shaved;
-  }
-  
-  class Shaver {
-      method shave($yak) {
-          ...
-      }
-  }
-  
-  class YakStore {
-      method get-all-yaks() {
-          ...
-      }
-  }
-  
-  class YakShaving {
-      has $!yak-store;
-      has $!yak-shaver;
-      
-      method proccess() {
-          for $!yak-store.get-all-yaks() -> $yak {
-              unless $yak.shaved {
-                  $!yak-shaver.shave($yak);
-              }
-          }
-      }
-  }
+    class Yak {
+        has $.shaved;
+    }
+    
+    class Shaver {
+        method shave($yak) {
+            ...
+        }
+    }
+    
+    class YakStore {
+        method get-all-yaks() {
+            ...
+        }
+    }
+    
+    class YakShaving {
+        has $!yak-store;
+        has $!yak-shaver;
+        
+        method proccess() {
+            for $!yak-store.get-all-yaks() -> $yak {
+                unless $yak.shaved {
+                    $!yak-shaver.shave($yak);
+                }
+            }
+        }
+    }
 
 We want to check that our the shave method from the Shaver class is only
 invoked for yaks that need shaving. We set up our mock of the Shaver class
 just as normal:
 
-  my $shaver = mocked(Shaver);
+    my $shaver = mocked(Shaver);
 
 However, for the Yak store we want to provide some fake yaks in various
 states of shavenness.
 
-  my $store = mocked(YakStore, returning => {
-      get-all-yaks => (Yak.new(:!shaved), Yak.new(:shaved), Yak.new(:!shaved))
-  });
+    my $store = mocked(YakStore, returning => {
+        get-all-yaks => (Yak.new(:!shaved), Yak.new(:shaved), Yak.new(:!shaved))
+    });
 
 Now we can inject our mocks to the YakShaving class and and get it to do
 it's thing.
 
-  my $yaktivity = YakShaving.new(
-      yak-store => $store,
-      yak-shaver => $shaver
-  );
-  $yaktivity.proccess();
+    my $yaktivity = YakShaving.new(
+        yak-store => $store,
+        yak-shaver => $shaver
+    );
+    $yaktivity.proccess();
 
 And finally, it's time to write our tests. We expect just one call on the
 store:
 
-  check-mock($store,
-      *.called('get-all-yaks', times => 1)
-  );
+    check-mock($store,
+        *.called('get-all-yaks', times => 1)
+    );
 
 On the shaver, we expect two calls in total to the shave method with yaks
 that are unshaven, and no calls at all with shaven yaks.
 
-  check-mock($shaver,
-      *.called('shave', times => 2, with => :($ where { !$^y.shaved })),
-      *.never-called('shave', with => :($ where { $^y.shaved }))
-  );
+    check-mock($shaver,
+        *.called('shave', times => 2, with => :($ where { !$^y.shaved })),
+        *.never-called('shave', with => :($ where { $^y.shaved }))
+    );
 
 This is the first example where we're really made good use of mock testing;
 if absolutely every object involved in the test is mocked, then you'd not be
