@@ -46,8 +46,7 @@ check-mock($store,
     *.called('get-all-yaks', times => 1)
 );
 
-skip('with not supported yet', 2);
-#check-mock($shaver,
-#    *.called('shave', times => 2, with => :($ where { !$^y.shaved })),
-#    *.never-called('shave', with => :($ where { $^y.shaved }))
-#);
+check-mock($shaver,
+    *.called('shave', times => 2, with => :($ where { !$^y.shaved })),
+    *.never-called('shave', with => :($ where { $^y.shaved }))
+);
