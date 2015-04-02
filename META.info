@@ -2,6 +2,9 @@
     "name" : "Test::Mock",
     "version" : "*",
     "description" : "Simple creation of mock objects using the Act, Arrange, Assert pattern.",
+    "provides" : {
+        "Test::Mock" : "lib/Test/Mock.pm"
+    },
     "depends" : [ ],
     "source-url" : "git://github.com/jnthn/test-mock.git"
 }
