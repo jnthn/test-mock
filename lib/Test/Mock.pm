@@ -4,7 +4,7 @@ class Test::Mock::Log {
     has @!log-entries;
 
     method log-method-call($name, $capture) {
-        @!log-entries.push({ :$name, :$capture });
+        @!log-entries.push($%( :$name, :$capture ));
     }
 
     method called($name, :$times, :$with) {
@@ -54,7 +54,7 @@ module Test::Mock {
                 unless %already-seen{$m.name} {
                     $mocker.HOW.add_method($mocker, $m.name, method (|c) {
                         self.'!mock-log'().log-method-call($m.name, c);
-                        %returning{$m.name} ~~ Iterable || %returning{$m.name} ~~ Parcel ??
+                        %returning{$m.name} ~~ Iterable ??
                             @(%returning{$m.name}) !!
                             %returning{$m.name}
                     });
