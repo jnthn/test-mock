@@ -1,4 +1,4 @@
-# Synopsis
+# Synopsis [![Build Status](https://travis-ci.org/tbrownaw/test-mock.svg?branch=master)](https://travis-ci.org/tbrownaw/test-mock)
 
     use Test;
     use Test::Mock;
