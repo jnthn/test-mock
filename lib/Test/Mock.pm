@@ -67,9 +67,10 @@ module Test::Mock {
         my $log := Test::Mock::Log.new();
         $mocker.HOW.add_method($mocker, '!mock-log', method { $log });
 
-        # Return a mock object, setting the logger.
+        # Return a mock object; use use CREATE to bypass construction logic
+        # of the real object, since we won't use any of its state anyway
         my $mocked = $mocker.HOW.compose($mocker);
-        $mocked.new()
+        $mocked.CREATE
     }
 
     sub check-mock($mock, *@checker) is export {
