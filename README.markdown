@@ -199,5 +199,19 @@ somewhat depends on good de-coupled code design, where objects are given
 instances of other objects to work on rather than directly instantiating
 objects of other classes.
 
+Sometimes, it would be nice to fake an exception or do some other computation
+rather than return a literal value. For that, use `doing` instead of using
+`returning`. Our previous example would look like this:
+
+    my $store = mocked(YakStore, doing => {
+        get-all-yaks => { Yak.new(:!shaved), Yak.new(:shaved), Yak.new(:!shaved) }
+    });
+
+However, unlike with `returning`, it's possible to instead do:
+
+    my $store = mocked(YakStore, doing => {
+        get-all-yaks => { die "Could not connect to yak-db" }
+    });
+
 Feature requests, bug reports and patches on this module are welcome; use
 the GitHub issues tracker.
