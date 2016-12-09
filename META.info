@@ -1,7 +1,7 @@
 {
     "perl" : "6.*",
     "name" : "Test::Mock",
-    "version" : "1.0",
+    "version" : "1.1",
     "description" : "Simple creation of mock objects using the Arrange, Act, Assert pattern.",
     "provides" : {
         "Test::Mock" : "lib/Test/Mock.pm"
