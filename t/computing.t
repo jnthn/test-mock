@@ -32,7 +32,7 @@ class YakShaving {
 }
 
 my $shaver = mocked(Shaver);
-my $store = mocked(YakStore, doing => {
+my $store = mocked(YakStore, computing => {
     get-all-yaks => { Yak.new(:!shaved), Yak.new(:shaved), Yak.new(:!shaved) }
 });
 my $yaktivity = YakShaving.new(
@@ -49,7 +49,7 @@ check-mock($shaver,
 );
 
 $shaver = mocked(Shaver);
-$store = mocked(YakStore, doing => {
+$store = mocked(YakStore, computing => {
     get-all-yaks => { die "Boom!" }
 });
 $yaktivity = YakShaving.new(

@@ -200,16 +200,16 @@ instances of other objects to work on rather than directly instantiating
 objects of other classes.
 
 Sometimes, it would be nice to fake an exception or do some other computation
-rather than return a literal value. For that, use `doing` instead of using
+rather than return a literal value. For that, use `computing` instead of using
 `returning`. Our previous example would look like this:
 
-    my $store = mocked(YakStore, doing => {
+    my $store = mocked(YakStore, computing => {
         get-all-yaks => { Yak.new(:!shaved), Yak.new(:shaved), Yak.new(:!shaved) }
     });
 
 However, unlike with `returning`, it's possible to instead do:
 
-    my $store = mocked(YakStore, doing => {
+    my $store = mocked(YakStore, computing => {
         get-all-yaks => { die "Could not connect to yak-db" }
     });
 

@@ -43,7 +43,7 @@ class Test::Mock::Log {
 };
 
 module Test::Mock {
-    sub mocked($type, :%returning, :%doing) is export {
+    sub mocked($type, :%returning, :%computing) is export {
         # Generate a subclass that logs each method call.
         my %already-seen = :new;
         my $mocker := Metamodel::ClassHOW.new_type();
@@ -54,7 +54,7 @@ module Test::Mock {
                 unless %already-seen{$m.name} {
                     $mocker.HOW.add_method($mocker, $m.name, method (|c) {
                         self.'!mock-log'().log-method-call($m.name, c);
-                        if %doing{$m.name} -> $do {
+                        if %computing{$m.name} -> $do {
                             $do()
                         }
                         elsif %returning{$m.name} ~~ Iterable {
