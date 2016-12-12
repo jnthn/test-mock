@@ -213,5 +213,12 @@ However, unlike with `returning`, it's possible to instead do:
         get-all-yaks => { die "Could not connect to yak-db" }
     });
 
+Occasionally, it is also desirable to have access to the arguments passed to
+method. In this case, use `overriding`:
+
+    my $shaver = mocked(Shaver, overriding => {
+        shave => -> $yak { die 'Already shaven' if $yak.shaved }
+    });
+
 Feature requests, bug reports and patches on this module are welcome; use
 the GitHub issues tracker.
