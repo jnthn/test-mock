@@ -45,7 +45,7 @@ class Test::Mock::Log {
 module Test::Mock {
     sub mocked($type, :%returning, :%computing, :%overriding) is export {
         # Generate a subclass that logs each method call.
-        my %already-seen = :new;
+        my %already-seen;
         my $mocker := Metamodel::ClassHOW.new_type();
         $mocker.HOW.add_parent($mocker, $type.WHAT);
         for $type.^mro() -> $p {
