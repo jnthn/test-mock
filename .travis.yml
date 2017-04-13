@@ -2,7 +2,7 @@ language: perl6
 
 perl6:
     - latest
-    - 2016.01
+    - 2017.03
 
 install:
     - rakudobrew build-panda
