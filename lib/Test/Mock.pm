@@ -1,6 +1,7 @@
 use Test;
+use OO::Monitors;
 
-class Test::Mock::Log {
+monitor Test::Mock::Log {
     has @!log-entries;
 
     method log-method-call($name, $capture) {
