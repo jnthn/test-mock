@@ -4,6 +4,7 @@
     "authors" : [ "Jonathan Worthington <jnthn@jnthn.net>" ],
     "version" : "1.4",
     "description" : "Creation of stub objects using the Arrange, Act, Assert pattern.",
+    "license"     : "Artistic-2.0",
     "depends" : [ "OO::Monitors" ],
     "provides" : {
         "Test::Mock" : "lib/Test/Mock.pm"
