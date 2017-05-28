@@ -68,11 +68,11 @@ module Test::Mock {
                             %returning{$m.name}
                         }
                     }
-					if $m.rw {
-						$mocker.HOW.add_method($mocker, $m.name, $meth);
-					} else {
-						$mocker.HOW.add_method($mocker, $m.name, method (|c) {self.$meth(|c)});
-					}
+                    if $m.rw {
+                        $mocker.HOW.add_method($mocker, $m.name, $meth);
+                    } else {
+                        $mocker.HOW.add_method($mocker, $m.name, method (|c) {self.$meth(|c)});
+                    }
                     %already-seen{$m.name} = True;
                 }
             }
