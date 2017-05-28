@@ -53,7 +53,7 @@ module Test::Mock {
             last unless $p.^parents(:local);
             for $p.^methods(:local) -> $m {
                 unless %already-seen{$m.name} {
-                    $mocker.HOW.add_method($mocker, $m.name, method (|c) {
+                    my $meth = method (|c) is rw {
                         self.'!mock-log'().log-method-call($m.name, c);
                         if %overriding{$m.name} -> $override {
                             $override(|c)
@@ -67,7 +67,12 @@ module Test::Mock {
                         else {
                             %returning{$m.name}
                         }
-                    });
+                    }
+                    if $m.rw {
+                        $mocker.HOW.add_method($mocker, $m.name, $meth);
+                    } else {
+                        $mocker.HOW.add_method($mocker, $m.name, method (|c) {self.$meth(|c)});
+                    }
                     %already-seen{$m.name} = True;
                 }
             }
