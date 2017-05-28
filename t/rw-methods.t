@@ -2,6 +2,8 @@ use Test;
 use lib "lib";
 use Test::Mock;
 
+plan 5;
+
 subtest {
 	my class C {
 		has $.a is rw
