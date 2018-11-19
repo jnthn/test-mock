@@ -51,29 +51,29 @@ module Test::Mock {
         $mocker.HOW.add_parent($mocker, $type.WHAT);
         for $type.^mro() -> $p {
             last unless $p.^parents(:local);
-            for $p.^methods(:local) -> $m {
-                unless %already-seen{$m.name} {
+            for $p.^method_table.kv -> $method-name, $method-obj {
+                unless %already-seen{$method-name} {
                     my $meth = method (|c) is rw {
-                        self.'!mock-log'().log-method-call($m.name, c);
-                        if %overriding{$m.name} -> $override {
+                        self.'!mock-log'().log-method-call($method-name, c);
+                        if %overriding{$method-name} -> $override {
                             $override(|c)
                         }
-                        elsif %computing{$m.name} -> $compute {
+                        elsif %computing{$method-name} -> $compute {
                             $compute()
                         }
-                        elsif %returning{$m.name} ~~ Iterable {
-                            @(%returning{$m.name})
+                        elsif %returning{$method-name} ~~ Iterable {
+                            @(%returning{$method-name})
                         }
                         else {
-                            %returning{$m.name}
+                            %returning{$method-name}
                         }
                     }
-                    if $m.rw {
-                        $mocker.HOW.add_method($mocker, $m.name, $meth);
+                    if $method-obj.rw {
+                        $mocker.HOW.add_method($mocker, $method-name, $meth);
                     } else {
-                        $mocker.HOW.add_method($mocker, $m.name, method (|c) {self.$meth(|c)});
+                        $mocker.HOW.add_method($mocker, $method-name, method (|c) {self.$meth(|c)});
                     }
-                    %already-seen{$m.name} = True;
+                    %already-seen{$method-name} = True;
                 }
             }
         }
