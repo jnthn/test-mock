@@ -219,6 +219,8 @@ method. In this case, use `overriding`:
     my $shaver = mocked(Shaver, overriding => {
         shave => -> $yak { die 'Already shaven' if $yak.shaved }
     });
+    
+Of course, you can use `returning`, `computing` and `overriding` in a call to `mocked` to get different behaviours for different methods, as long as each method name only occurs once.
 
 Feature requests, bug reports and patches on this module are welcome; use
 the GitHub issues tracker.
