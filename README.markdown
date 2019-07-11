@@ -143,8 +143,8 @@ and a yak shaver.
     }
     
     class YakShaving {
-        has $!yak-store;
-        has $!yak-shaver;
+        has $.yak-store;
+        has $.yak-shaver;
         
         method proccess() {
             for $!yak-store.get-all-yaks() -> $yak {
