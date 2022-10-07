@@ -15,7 +15,12 @@ monitor Test::Mock::Log {
         # If we've an argument filter, apply it; we smart-match
         # everything but captures, which we eqv.
         my $with-args-note = "";
+        my $candidates-note = "";
         if defined($with) {
+            if @calls {
+                $candidates-note = ", was only called with:"
+                                 ~ @calls.map({ "\n" ~ .<capture>.raku });
+            }
             if $with ~~ Capture {
                 @calls .= grep({ .<capture> eqv $with });
             }
@@ -31,10 +36,12 @@ monitor Test::Mock::Log {
                 $times == 0 ?? "never called $name" !!
                 $times == 1 ?? "called $name 1 time" !!
                                "called $name $times times";
-            is +@calls, $times, "$times-msg$with-args-note";
+            is +@calls, $times, "$times-msg$with-args-note"
+                ~ (+@calls ?? "" !! $candidates-note);
         }
         else {
-            ok ?@calls, "called $name$with-args-note";
+            ok ?@calls, "called $name$with-args-note"
+                ~ (?@calls ?? "" !! $candidates-note);
         }
     }
 
