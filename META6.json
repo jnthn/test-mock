@@ -7,7 +7,7 @@
     "license"     : "Artistic-2.0",
     "depends" : [ "OO::Monitors" ],
     "provides" : {
-        "Test::Mock" : "lib/Test/Mock.pm6"
+        "Test::Mock" : "lib/Test/Mock.rakumod"
     },
     "source-url" : "git://github.com/jnthn/test-mock.git"
 }
