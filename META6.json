@@ -1,8 +1,9 @@
 {
-    "perl" : "6.*",
+    "perl" : "6.d",
     "name" : "Test::Mock",
+    "auth" : "zef:jnthn",
     "authors" : [ "Jonathan Worthington <jnthn@jnthn.net>" ],
-    "version" : "1.5",
+    "version" : "1.6",
     "description" : "Creation of stub objects using the Arrange, Act, Assert pattern.",
     "license"     : "Artistic-2.0",
     "depends" : [ "OO::Monitors" ],
